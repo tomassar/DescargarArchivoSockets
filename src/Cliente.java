@@ -10,108 +10,95 @@ public class Cliente {
 
     public static void main(String[] args) {
 
-        // Accessed from within inner class needs to be final or effectively final.
         final File[] fileToSend = new File[1];
 
-        // Set the frame to house everything.
+        // Se crea el Frame principal que contendrá los paneles
         JFrame jFrame = new JFrame("WittCode's Client");
-        // Set the size of the frame.
         jFrame.setSize(450, 450);
-        // Make the layout to be box layout that places its children on top of each other.
+        //Se hace un box layout que permitirá poner los paneles uno sobre otro
         jFrame.setLayout(new BoxLayout(jFrame.getContentPane(), BoxLayout.Y_AXIS));
-        // Make it so when the frame is closed the program exits successfully.
+        //Cuando se cierra la Ventana, se cierra el programa.
         jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        // Title above panel.
+
         JLabel jlTitle = new JLabel("WittCode's File Sender");
-        // Change the font family, size, and style.
         jlTitle.setFont(new Font("Arial", Font.BOLD, 25));
-        // Add a border around the label for spacing.
+        // Se añade un borde alrededor del JLabel como espaciado.
         jlTitle.setBorder(new EmptyBorder(20,0,10,0));
-        // Make it so the title is centered horizontally.
         jlTitle.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        // Label that has the file name.
-        JLabel jlFileName = new JLabel("Choose a file to send.");
-        // Change the font.
+        // Se crea un label para indicar que tiene que escoger un archivo para enviar
+        JLabel jlFileName = new JLabel("Escoja un archivo para enviar:");
         jlFileName.setFont(new Font("Arial", Font.BOLD, 20));
-        // Make a border for spacing.
         jlFileName.setBorder(new EmptyBorder(50, 0, 0, 0));
-        // Center the label on the x axis (horizontally).
         jlFileName.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        // Panel that contains the buttons.
+        // Se crea un panel que contiene los botones
         JPanel jpButton = new JPanel();
-        // Border for panel that houses buttons.
+        // Se crea un borde de espaciado para el panel que contiene los botones
         jpButton.setBorder(new EmptyBorder(75, 0, 10, 0));
-        // Create send file button.
-        JButton jbSendFile = new JButton("Send File");
-        // Set preferred size works for layout containers.
+        // Se crea el boton para enviar archivo
+        JButton jbSendFile = new JButton("Enviar archivo");
         jbSendFile.setPreferredSize(new Dimension(150, 75));
-        // Change the font style, type, and size for the button.
         jbSendFile.setFont(new Font("Arial", Font.BOLD, 20));
-        // Make the second button to choose a file.
-        JButton jbChooseFile = new JButton("Choose File");
-        // Set the size which must be preferred size for within a container.
+        // Se crea el segundo boton para elegir archivo
+        JButton jbChooseFile = new JButton("Seleccionar archivo");
         jbChooseFile.setPreferredSize(new Dimension(150, 75));
-        // Set the font for the button.
         jbChooseFile.setFont(new Font("Arial", Font.BOLD, 20));
 
-        // Add the buttons to the panel.
+        // Se añaden los botones al panel
         jpButton.add(jbSendFile);
         jpButton.add(jbChooseFile);
 
-        // Button action for choosing the file.
-        // This is an inner class so we need the fileToSend to be final.
+        // Se crea un ActionListener
+        // Se crea un botón para seleccionar el archivo que queremos enviar
         jbChooseFile.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // Create a file chooser to open the dialog to choose a file.
+                // Se crea la un JFileChooser para abrir el explorador de archivos
                 JFileChooser jFileChooser = new JFileChooser();
-                // Set the title of the dialog.
-                jFileChooser.setDialogTitle("Choose a file to send.");
-                // Show the dialog and if a file is chosen from the file chooser execute the following statements.
+                jFileChooser.setDialogTitle("Seleccione el archivo");
+                // Si se selecciona un archivo desde el JFileChooser se ejecuta la acción
                 if (jFileChooser.showOpenDialog(null)  == JFileChooser.APPROVE_OPTION) {
-                    // Get the selected file.
+                    // Se obtiene el archivo seleccionado
                     fileToSend[0] = jFileChooser.getSelectedFile();
-                    // Change the text of the java swing label to have the file name.
-                    jlFileName.setText("The file you want to send is: " + fileToSend[0].getName());
+                    jlFileName.setText("El archivo que seleccionó para enviar es: " + fileToSend[0].getName());
                 }
             }
         });
 
-
-        // Sends the file when the button is clicked.
+        // Se crea otro ActionListener
+        // Se envía el archivo que seleccionamos cuando se presiona el botón
         jbSendFile.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // If a file has not yet been selected then display this message.
+                // Si no se seleccionó ningún archivo se enviará este mensaje de advertencia
                 if (fileToSend[0] == null) {
-                    jlFileName.setText("Please choose a file to send first!");
-                    // If a file has been selected then do the following.
+                    jlFileName.setText("Seleccione un archivo antes de enviar.");
+                    // Si se seleccionó un archivo se ejecuta lo siguiente
                 } else {
                     try {
-                        // Create an input stream into the file you want to send.
+                        // Se crea un inputStream en el achivo que queremos enviar.
                         FileInputStream fileInputStream = new FileInputStream(fileToSend[0].getAbsolutePath());
-                        // Create a socket connection to connect with the server.
+                        // Se crea una conexión mediante un socket con el servidor
                         Socket socket = new Socket("localhost", 1234);
-                        // Create an output stream to write to write to the server over the socket connection.
+                        // Se crea un OutputStream para escribir al servidor mediante el socket.
                         DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
-                        // Get the name of the file you want to send and store it in filename.
+                        // Se obtiene el nombre del archivo que queremos enviar y lo guardamos en fileName
                         String fileName = fileToSend[0].getName();
-                        // Convert the name of the file into an array of bytes to be sent to the server.
+                        // Convertimos el nombre del archivo en un array de bytes para que se puedan enviar al servidor
                         byte[] fileNameBytes = fileName.getBytes();
-                        // Create a byte array the size of the file so don't send too little or too much data to the server.
+                        // Se crea un array de bytes del tamaño del archivo
                         byte[] fileBytes = new byte[(int)fileToSend[0].length()];
-                        // Put the contents of the file into the array of bytes to be sent so these bytes can be sent to the server.
+                        // Se pone el contenido del archivo en el array de bytes creado para que sea enviado.
                         fileInputStream.read(fileBytes);
-                        // Send the length of the name of the file so server knows when to stop reading.
+                        // Se envía el largo del nombre del archivo así el servidor sabe cuando dejar de leerlo
                         dataOutputStream.writeInt(fileNameBytes.length);
-                        // Send the file name.
+                        // Se envía el nombre del archivo.
                         dataOutputStream.write(fileNameBytes);
-                        // Send the length of the byte array so the server knows when to stop reading.
+                        // Se envía el largo del array de bytes así el servidor sabe cuando dejar de leerlo
                         dataOutputStream.writeInt(fileBytes.length);
-                        // Send the actual file.
+                        // Se envía el archivo
                         dataOutputStream.write(fileBytes);
                     } catch (IOException ex) {
                         ex.printStackTrace();
@@ -120,7 +107,7 @@ public class Cliente {
             }
         });
 
-        // Add everything to the frame and make it visible.
+        // Se agregan los paneles, labels y botones al Frame y se hacen visibles.
         jFrame.add(jlTitle);
         jFrame.add(jlFileName);
         jFrame.add(jpButton);
