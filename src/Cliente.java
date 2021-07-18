@@ -13,22 +13,23 @@ public class Cliente {
         final File[] fileToSend = new File[1];
 
         // Se crea el Frame principal que contendrá los paneles
-        JFrame jFrame = new JFrame("WittCode's Client");
-        jFrame.setSize(450, 450);
+        JFrame jFrame = new JFrame("Envío de archivos");
+        jFrame.setSize(500, 500);
+        jFrame.setLocationRelativeTo(null);
         //Se hace un box layout que permitirá poner los paneles uno sobre otro
         jFrame.setLayout(new BoxLayout(jFrame.getContentPane(), BoxLayout.Y_AXIS));
         //Cuando se cierra la Ventana, se cierra el programa.
         jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 
-        JLabel jlTitle = new JLabel("WittCode's File Sender");
+        JLabel jlTitle = new JLabel("Envío de Archivos");
         jlTitle.setFont(new Font("Arial", Font.BOLD, 25));
         // Se añade un borde alrededor del JLabel como espaciado.
         jlTitle.setBorder(new EmptyBorder(20,0,10,0));
         jlTitle.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         // Se crea un label para indicar que tiene que escoger un archivo para enviar
-        JLabel jlFileName = new JLabel("Escoja un archivo para enviar:");
+        JLabel jlFileName = new JLabel("Seleccione un archivo para enviar:");
         jlFileName.setFont(new Font("Arial", Font.BOLD, 20));
         jlFileName.setBorder(new EmptyBorder(50, 0, 0, 0));
         jlFileName.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -38,13 +39,17 @@ public class Cliente {
         // Se crea un borde de espaciado para el panel que contiene los botones
         jpButton.setBorder(new EmptyBorder(75, 0, 10, 0));
         // Se crea el boton para enviar archivo
-        JButton jbSendFile = new JButton("Enviar archivo");
+        JButton jbSendFile = new JButton("Enviar");
         jbSendFile.setPreferredSize(new Dimension(150, 75));
         jbSendFile.setFont(new Font("Arial", Font.BOLD, 20));
+        jbSendFile.setFocusable(false);
+        jbSendFile.setBackground (new Color (-394241));
         // Se crea el segundo boton para elegir archivo
-        JButton jbChooseFile = new JButton("Seleccionar archivo");
+        JButton jbChooseFile = new JButton("Seleccionar");
         jbChooseFile.setPreferredSize(new Dimension(150, 75));
         jbChooseFile.setFont(new Font("Arial", Font.BOLD, 20));
+        jbChooseFile.setFocusable(false);
+        jbChooseFile.setBackground (new Color (-394241));
 
         // Se añaden los botones al panel
         jpButton.add(jbSendFile);
@@ -75,6 +80,7 @@ public class Cliente {
                 // Si no se seleccionó ningún archivo se enviará este mensaje de advertencia
                 if (fileToSend[0] == null) {
                     jlFileName.setText("Seleccione un archivo antes de enviar.");
+                    jlFileName.setForeground(Color.RED);
                     // Si se seleccionó un archivo se ejecuta lo siguiente
                 } else {
                     try {

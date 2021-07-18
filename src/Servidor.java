@@ -21,21 +21,22 @@ public class Servidor {
         int fileId = 0;
 
         //Se crea un Frame prncipal
-        JFrame jFrame = new JFrame("WittCode's Server");
-        jFrame.setSize(400, 400);
+        JFrame jFrame = new JFrame("Servidor");
+        jFrame.setSize(500, 500);
         jFrame.setLayout(new BoxLayout(jFrame.getContentPane(), BoxLayout.Y_AXIS));
         jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        jFrame.setLocationRelativeTo(null);
 
+        //Se crea un panel en el que se mostrarán los archivos que se enviaron al servidor
         JPanel jPanel = new JPanel();
         jPanel.setLayout(new BoxLayout(jPanel, BoxLayout.Y_AXIS));
 
-        // Se crea el elemento scroll para poder revisar la data que entra al JPanel
+        // Se pone un scroll vertical en la pantalla para poder navegar hacia arriba o abajo en el panel de los archivos que se subieron al servidor
         JScrollPane jScrollPane = new JScrollPane(jPanel);
-        // Siempre habrá un scroll vertical.
         jScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 
-
-        JLabel jlTitle = new JLabel("WittCode's File Receiver");
+        //Título de la ventana
+        JLabel jlTitle = new JLabel("Archivos recibidos:");
         jlTitle.setFont(new Font("Arial", Font.BOLD, 25));
         jlTitle.setBorder(new EmptyBorder(20,0,10,0));
         jlTitle.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -76,7 +77,7 @@ public class Servidor {
                         JPanel jpFileRow = new JPanel();
                         jpFileRow.setLayout(new BoxLayout(jpFileRow, BoxLayout.X_AXIS));
                         JLabel jlFileName = new JLabel(fileName);
-                        jlFileName.setFont(new Font("Arial", Font.BOLD, 20));
+                       //jlFileName.setFont(new Font("Arial", Font.BOLD, 20));
                         jlFileName.setBorder(new EmptyBorder(10,0, 10,0));
                         if (getFileExtension(fileName).equalsIgnoreCase("txt")) {
                             // Se establece que el nombre sea el fileId, de tal forma que se pueda obtener el archivo correcto desde el panel.
@@ -125,9 +126,7 @@ public class Servidor {
     }
 
     /**
-     * When the jpanel is clicked a popup shows to say whether the user wants to download
-     * the selected document.
-     *
+     * Cuando se hace click en el nombre del archivo, se abre una ventana nueva (método createFrame) para verificar si el usuario quiere o no descargar el archivo.
      * @return A mouselistener that is used by the jpanel.
      */
     public static MouseListener getMyMouseListener() {
@@ -168,86 +167,74 @@ public class Servidor {
             }
         };
     }
-
+//Se crea la ventana que sirve para previsualizar el archivo a descargar y para confirmar si se desea descargar o no.
     public static JFrame createFrame(String fileName, byte[] fileData, String fileExtension) {
 
-        // Frame to hold everything.
-        JFrame jFrame = new JFrame("WittCode's File Downloader");
-        // Set the size of the frame.
-        jFrame.setSize(400, 400);
+        JFrame jFrame = new JFrame("Descarga de archivo");
+        jFrame.setSize(500, 500);
 
-        // Panel to hold everything.
         JPanel jPanel = new JPanel();
-        // Make the layout a box layout with child elements stacked on top of each other.
         jPanel.setLayout(new BoxLayout(jPanel, BoxLayout.Y_AXIS));
 
-        // Title above panel.
-        JLabel jlTitle = new JLabel("WittCode's File Downloader");
-        // Center the label title horizontally.
-        jlTitle.setAlignmentX(Component.CENTER_ALIGNMENT);
-        // Change the font family, size, and style.
-        jlTitle.setFont(new Font("Arial", Font.BOLD, 25));
-        // Add spacing on the top and bottom of the element.
-        jlTitle.setBorder(new EmptyBorder(20,0,10,0));
 
-        // Label to prompt the user if they are sure they want to download the file.
-        JLabel jlPrompt = new JLabel("Are you sure you want to download " + fileName + "?");
-        // Change the font style, size, and family of the label.
+        JLabel jlPrompt = new JLabel("¿Estás seguro de descargar el archivo " + fileName + "?");
         jlPrompt.setFont(new Font("Arial", Font.BOLD, 20));
-        // Add spacing on the top and bottom of the label.
         jlPrompt.setBorder(new EmptyBorder(20,0,10,0));
-        // Center the label horizontally.
         jlPrompt.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        // Create the yes for accepting the download.
-        JButton jbYes = new JButton("Yes");
+        // Se crea el boton SI
+        JButton jbYes = new JButton("Si");
         jbYes.setPreferredSize(new Dimension(150, 75));
-        // Set the font for the button.
         jbYes.setFont(new Font("Arial", Font.BOLD, 20));
+        jbYes.setFocusable(false);
+        jbYes.setBackground (new Color (-394241));
 
-        // No button for rejecting the download.
+        // Se crea el botón NO
         JButton jbNo = new JButton("No");
-        // Change the size of the button must be preferred because if not the layout will ignore it.
         jbNo.setPreferredSize(new Dimension(150, 75));
-        // Set the font for the button.
         jbNo.setFont(new Font("Arial", Font.BOLD, 20));
+        jbNo.setFocusable(false);
+        jbNo.setBackground (new Color (-394241));
 
-        // Label to hold the content of the file whether it be text of images.
+
+        // Se crea un Label para mostrar el contenido del archivo que se quiere descargar
         JLabel jlFileContent = new JLabel();
-        // Align the label horizontally.
         jlFileContent.setAlignmentX(Component.CENTER_ALIGNMENT);
+        // Panel que mantiene el label para mostrar el contenido del archivo.
+        JPanel jpFileContent = new JPanel();
+        jpFileContent.add(jlFileContent);
 
-        // Panel to hold the yes and no buttons and make the next to each other left and right.
+
+        // Panel que mantiene los botones sí y no
         JPanel jpButtons = new JPanel();
-        // Add spacing around the panel.
-        jpButtons.setBorder(new EmptyBorder(20, 0, 10, 0));
-        // Add the yes and no buttons.
+        // Espaciado alrededor del panel
+        jpButtons.setBorder(new EmptyBorder(100, 0, 10, 0));
         jpButtons.add(jbYes);
         jpButtons.add(jbNo);
 
-        // If the file is a text file then display the text.
+        // Si el archivo es de texto, se muestra el texto
         if (fileExtension.equalsIgnoreCase("txt")) {
             // Wrap it with <html> so that new lines are made.
             jlFileContent.setText("<html>" + new String(fileData) + "</html>");
-            // If the file is not a text file then make it an image.
+            // Si el archivo es una imagen, se ve la imagen.
         } else {
             jlFileContent.setIcon(new ImageIcon(fileData));
         }
 
-        // Yes so download file.
+        // Si se presiona Sí, se descarga.
         jbYes.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // Create the file with its name.
+                // Se crea el archivo con su nombre
                 File fileToDownload = new File(fileName);
                 try {
-                    // Create a stream to write data to the file.
+                    //  Se crea un OutputStream para plasmar el texto del archivo en el descargado
                     FileOutputStream fileOutputStream = new FileOutputStream(fileToDownload);
-                    // Write the actual file data to the file.
+                    // Se copia el texto del archivo en el descargado.
                     fileOutputStream.write(fileData);
-                    // Close the stream.
+                    // Se cierra el copiado de información
                     fileOutputStream.close();
-                    // Get rid of the jFrame. after the user clicked yes.
+                    // Se cierra la ventana después de clickear Sí
                     jFrame.dispose();
                 } catch (IOException ex) {
                     ex.printStackTrace();
@@ -256,25 +243,21 @@ public class Servidor {
             }
         });
 
-        // No so close window.
+        // Si se presiona No, se cierra la ventana.
         jbNo.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // User clicked no so don't download the file but close the jframe.
                 jFrame.dispose();
             }
         });
 
-        // Add everything to the panel before adding to the frame.
-        jPanel.add(jlTitle);
         jPanel.add(jlPrompt);
-        jPanel.add(jlFileContent);
+        jPanel.add(jpFileContent);
         jPanel.add(jpButtons);
 
-        // Add panel to the frame.
         jFrame.add(jPanel);
+        jFrame.setLocationRelativeTo(null);
 
-        // Return the jFrame so it can be passed the right data and then shown.
         return jFrame;
 
     }
