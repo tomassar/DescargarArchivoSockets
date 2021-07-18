@@ -12,7 +12,7 @@ import java.util.ArrayList;
 
 public class Servidor {
 
-    // Array list to hold information about the files received.
+    // Se crea un ArrayList estático que guardará la información sobre los archivos recibidos.
     static ArrayList<MyFile> myFiles = new ArrayList<>();
 
     public static void main(String[] args) throws IOException {
@@ -20,101 +20,84 @@ public class Servidor {
         // Used to track the file (jpanel that has the file name in it on a label).
         int fileId = 0;
 
-        // Main container, set the name.
+        //Se crea un Frame prncipal
         JFrame jFrame = new JFrame("WittCode's Server");
-        // Set the size of the frame.
         jFrame.setSize(400, 400);
-        // Give the frame a box layout that stacks its children on top of each other.
         jFrame.setLayout(new BoxLayout(jFrame.getContentPane(), BoxLayout.Y_AXIS));
-        // When closing the frame also close the program.
         jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        // Panel that will hold the title label and the other jpanels.
         JPanel jPanel = new JPanel();
-        // Make the panel that contains everything to stack its child elements on top of eachother.
         jPanel.setLayout(new BoxLayout(jPanel, BoxLayout.Y_AXIS));
 
-        // Make it scrollable when the data gets in jpanel.
+        // Se crea el elemento scroll para poder revisar la data que entra al JPanel
         JScrollPane jScrollPane = new JScrollPane(jPanel);
-        // Make it so there is always a vertical scrollbar.
+        // Siempre habrá un scroll vertical.
         jScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 
-        // Title above panel.
+
         JLabel jlTitle = new JLabel("WittCode's File Receiver");
-        // Change the font of the title.
         jlTitle.setFont(new Font("Arial", Font.BOLD, 25));
-        // Add a border around the title for spacing.
         jlTitle.setBorder(new EmptyBorder(20,0,10,0));
-        // Center the title horizontally in the middle of the frame.
         jlTitle.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        // Add everything to the main GUI.
+        // Se añade el contenido al Frame principal y se hace visible
         jFrame.add(jlTitle);
         jFrame.add(jScrollPane);
-        // Make the GUI show up.
         jFrame.setVisible(true);
 
         // Create a server socket that the server will be listening with.
         ServerSocket serverSocket = new ServerSocket(1234);
 
-        // This while loop will run forever so the server will never stop unless the application is closed.
+        // Se crea un bucle infinito para que el servidor nunca termine a menos que la aplicación se cierre.
         while (true) {
 
             try {
-                // Wait for a client to connect and when they do create a socket to communicate with them.
+                // Se crea un socket para comunicarse con el cliente una vez que este se conecte.
                 Socket socket = serverSocket.accept();
 
-                // Stream to receive data from the client through the socket.
+                // Se crea un InputStream que recibe la información del cliente a través del socket
                 DataInputStream dataInputStream = new DataInputStream(socket.getInputStream());
 
-                // Read the size of the file name so know when to stop reading.
+                // Se lee el tamaño del nombre del archivo.
                 int fileNameLength = dataInputStream.readInt();
-                // If the file exists
+                // Si el archivo existe, se ejecuta el argumento del condicional
                 if (fileNameLength > 0) {
-                    // Byte array to hold name of file.
+                    // Se crea un array de bytes que guarda el nombre del archivo
                     byte[] fileNameBytes = new byte[fileNameLength];
-                    // Read from the input stream into the byte array.
+                    // Se lee el InputStream (que recibe la info del cliente) y se guarda en el array de bytes.
                     dataInputStream.readFully(fileNameBytes, 0, fileNameBytes.length);
-                    // Create the file name from the byte array.
                     String fileName = new String(fileNameBytes);
-                    // Read how much data to expect for the actual content of the file.
+                    //Se lee cuanta información se espera del contenido del archivo
                     int fileContentLength = dataInputStream.readInt();
-                    // If the file exists.
+
                     if (fileContentLength > 0) {
-                        // Array to hold the file data.
                         byte[] fileContentBytes = new byte[fileContentLength];
-                        // Read from the input stream into the fileContentBytes array.
                         dataInputStream.readFully(fileContentBytes, 0, fileContentBytes.length);
-                        // Panel to hold the picture and file name.
                         JPanel jpFileRow = new JPanel();
                         jpFileRow.setLayout(new BoxLayout(jpFileRow, BoxLayout.X_AXIS));
-                        // Set the file name.
                         JLabel jlFileName = new JLabel(fileName);
                         jlFileName.setFont(new Font("Arial", Font.BOLD, 20));
                         jlFileName.setBorder(new EmptyBorder(10,0, 10,0));
                         if (getFileExtension(fileName).equalsIgnoreCase("txt")) {
-                            // Set the name to be the fileId so you can get the correct file from the panel.
+                            // Se establece que el nombre sea el fileId, de tal forma que se pueda obtener el archivo correcto desde el panel.
                             jpFileRow.setName((String.valueOf(fileId)));
                             jpFileRow.addMouseListener(getMyMouseListener());
-                            // Add everything.
+
                             jpFileRow.add(jlFileName);
                             jPanel.add(jpFileRow);
                             jFrame.validate();
                         } else {
-                            // Set the name to be the fileId so you can get the correct file from the panel.
+
                             jpFileRow.setName((String.valueOf(fileId)));
-                            // Add a mouse listener so when it is clicked the popup appears.
                             jpFileRow.addMouseListener(getMyMouseListener());
-                            // Add the file name and pic type to the panel and then add panel to parent panel.
                             jpFileRow.add(jlFileName);
                             jPanel.add(jpFileRow);
-                            // Perform a relayout.
                             jFrame.validate();
                         }
 
-                        // Add the new file to the array list which holds all our data.
+                        // Se añade el archivo al arrayList que guarda nuestra información
                         myFiles.add(new MyFile(fileId, fileName, fileContentBytes, getFileExtension(fileName)));
-                        // Increment the fileId for the next file to be received.
+                        // Se incrementa el fileID para que puedan seguir agregándose archivos
                         fileId++;
                     }
                 }
